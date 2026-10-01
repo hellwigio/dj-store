@@ -1,0 +1,5 @@
+# Run Caddy on the host; point DNS to this server and open ports 80/443.
+example.com {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8000
+}

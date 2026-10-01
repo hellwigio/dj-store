@@ -1,0 +1,21 @@
+name: checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.10"
+          enable-cache: true
+      - run: uv python install
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest
+      - run: uv run python manage.py makemigrations --check --dry-run --settings=config.settings.test
+      - run: uv run python manage.py collectstatic --noinput --settings=config.settings.build
+      - run: docker build -t django-starter:test .
